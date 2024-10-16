@@ -2,16 +2,16 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Requests\ProductRequest;
+use App\Http\Requests\CategoryRequest;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 
 /**
- * Class ProductCrudController
+ * Class CategoryCrudController
  * @package App\Http\Controllers\Admin
  * @property-read \Backpack\CRUD\app\Library\CrudPanel\CrudPanel $crud
  */
-class ProductCrudController extends CrudController
+class CategoryCrudController extends CrudController
 {
     use \Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation;
@@ -26,9 +26,9 @@ class ProductCrudController extends CrudController
      */
     public function setup()
     {
-        CRUD::setModel(\App\Models\Product::class);
-        CRUD::setRoute(config('backpack.base.route_prefix') . '/product');
-        CRUD::setEntityNameStrings('product', 'products');
+        CRUD::setModel(\App\Models\Category::class);
+        CRUD::setRoute(config('backpack.base.route_prefix') . '/category');
+        CRUD::setEntityNameStrings('category', 'categories');
     }
 
     /**
@@ -54,21 +54,12 @@ class ProductCrudController extends CrudController
      * @return void
      */
     protected function setupCreateOperation()
-{
-    CRUD::setValidation(ProductRequest::class);
-
-    CRUD::field('name')->label('Nombre del Producto')->type('text');
-    CRUD::field('description')->label('Descripción')->type('textarea');
-    CRUD::field('price')->label('Precio')->type('number')->attributes(['step' => '0.01']);
-    CRUD::field('stock')->label('Stock')->type('number');
-    CRUD::field('image')->label('Imagen')->type('upload')->upload(true)->disk('public');
-
-    // Campo de selección para la categoría
-    CRUD::field('category_id')->label('Categoría')->type('select')->entity('category')->model('App\Models\Category')->attribute('name')->options(function ($query) {
-        return $query->whereNull('parent_id')->get(); // Solo mostrar categorías principales
-    });
-}
-
+    {
+        CRUD::setValidation(CategoryRequest::class);
+    
+        CRUD::field('name')->label('Nombre de la Categoría')->type('text');
+        CRUD::field('parent_id')->label('Categoría Padre')->type('select')->entity('parent')->model('App\Models\Category')->attribute('name')->nullable(true); // Permitir seleccionar categoría padre
+    }
 
     /**
      * Define what happens when the Update operation is loaded.

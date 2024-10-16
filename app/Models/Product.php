@@ -11,5 +11,11 @@ class Product extends Model
     use CrudTrait;
     use HasFactory;
     // Agrega los campos que deseas permitir para la asignación masiva
-    protected $fillable = ['name', 'description', 'price', 'stock', 'image'];
+    protected $fillable = ['name', 'description', 'price', 'stock', 'image', 'category_id'];
+    
+    // Relación con la categoría
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
 }
