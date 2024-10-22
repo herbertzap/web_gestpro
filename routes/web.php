@@ -1,6 +1,9 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\ProductCrudController;
+use App\Http\Controllers\Admin\CategoryCrudController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -21,5 +24,5 @@ Route::get('/', function () {
 
 // routes/web.php
 
-Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
-
+Route::get('/categories', [CategoryCrudController::class, 'index'])->name('categories.index');
+Route::crud('product', ProductCrudController::class);

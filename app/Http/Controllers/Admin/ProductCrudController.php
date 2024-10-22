@@ -24,6 +24,16 @@ class ProductCrudController extends CrudController
      * 
      * @return void
      */
+
+     public function index()
+     {
+         $products = \App\Models\Product::all();
+         return view('dashboard', compact('products'));
+     }
+     
+     
+     
+     
     public function setup()
     {
         CRUD::setModel(\App\Models\Product::class);
@@ -41,10 +51,15 @@ class ProductCrudController extends CrudController
     {
         CRUD::setFromDb(); // set columns from db columns.
 
-        /**
-         * Columns can be defined using the fluent syntax:
-         * - CRUD::column('price')->type('number');
-         */
+        CRUD::column('codigo_producto')->label('Código del Producto');
+        CRUD::column('nombre_producto')->label('Nombre del Producto');
+        CRUD::column('codigo_subcategoria')->label('Código de Subcategoría');
+        CRUD::column('nombre_subcategoria')->label('Nombre de Subcategoría');
+        CRUD::column('codigo_categoria')->label('Código de Categoría');
+        CRUD::column('nombre_categoria')->label('Nombre de Categoría');
+        CRUD::column('precio')->label('Precio');
+        CRUD::column('stock')->label('Stock');
+        CRUD::column('imagen')->label('Imagen')->type('image');
     }
 
     /**
@@ -54,21 +69,26 @@ class ProductCrudController extends CrudController
      * @return void
      */
     protected function setupCreateOperation()
-{
-    CRUD::setValidation(ProductRequest::class);
+    {
+        CRUD::setValidation(ProductRequest::class);
 
-    CRUD::field('name')->label('Nombre del Producto')->type('text');
-    CRUD::field('description')->label('Descripción')->type('textarea');
-    CRUD::field('price')->label('Precio')->type('number')->attributes(['step' => '0.01']);
-    CRUD::field('stock')->label('Stock')->type('number');
-    CRUD::field('image')->label('Imagen')->type('upload')->upload(true)->disk('public');
+        // Asegúrate de usar los nombres correctos según tu base de datos
+        CRUD::field('codigo_producto')->label('Código del Producto')->type('text');
+        CRUD::field('nombre_producto')->label('Nombre del Producto')->type('text');
+        CRUD::field('codigo_subcategoria')->label('Código de Subcategoría')->type('text');
+        CRUD::field('nombre_subcategoria')->label('Nombre de Subcategoría')->type('text');
+        CRUD::field('codigo_categoria')->label('Código de Categoría')->type('text');
+        CRUD::field('nombre_categoria')->label('Nombre de Categoría')->type('text');
+        CRUD::field('descripcion')->label('Descripción')->type('textarea');
+        CRUD::field('precio')->label('Precio')->type('number')->attributes(['step' => '0.01']);
+        CRUD::field('stock')->label('Stock')->type('number');
+        CRUD::field('imagen')->label('Imagen')->type('upload')->upload(true)->disk('public');
 
-    // Campo de selección para la categoría
-    CRUD::field('category_id')->label('Categoría')->type('select')->entity('category')->model('App\Models\Category')->attribute('name')->options(function ($query) {
-        return $query->whereNull('parent_id')->get(); // Solo mostrar categorías principales
-    });
-}
-
+        // Campo de selección para la categoría
+        CRUD::field('codigo_categoria')->label('Categoría')->type('select')->entity('category')->model('App\Models\Category')->attribute('nombre_categoria')->options(function ($query) {
+            return $query->whereNull('parent_id')->get(); // Solo mostrar categorías principales
+        });
+    }
 
     /**
      * Define what happens when the Update operation is loaded.

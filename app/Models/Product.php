@@ -10,12 +10,24 @@ class Product extends Model
 {
     use CrudTrait;
     use HasFactory;
-    // Agrega los campos que deseas permitir para la asignación masiva
-    protected $fillable = ['name', 'description', 'price', 'stock', 'image', 'category_id'];
+
+    protected $table = 'vista_productos';
+
+    public $timestamps = false;
+
+    protected $fillable = [
+        'codigo_categoria',       // FE
+        'nombre_categoria',       // FERRETERIA
+        'codigo_subcategoria',    // ADP
+        'nombre_subcategoria',    // ADHESIVOS PISOS
+        'codigo_producto',        
+        'nombre_producto'         
+    ];
     
-    // Relación con la categoría
-    public function category()
-    {
-        return $this->belongsTo(Category::class);
-    }
+
+    // ahora se obtienen de la vista
+    // public function category()
+    // {
+    //     return $this->belongsTo(Category::class);
+    // }
 }
