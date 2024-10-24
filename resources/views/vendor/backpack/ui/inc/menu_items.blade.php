@@ -11,4 +11,5 @@
 <x-backpack::menu-dropdown title="Productos" icon="la la-group">
     <x-backpack::menu-dropdown-item title="product" icon="la la-user" :link="backpack_url('product')" />
     <x-backpack::menu-dropdown-item title="Categories" icon="la la-group" :link="backpack_url('category')" />
+    <x-backpack::menu-dropdown-item title="Crear Producto" icon="la la-plus" :link="backpack_url('product/create')" />
 </x-backpack::menu-dropdown>

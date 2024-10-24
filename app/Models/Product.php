@@ -24,6 +24,10 @@ class Product extends Model
         'nombre_producto'         
     ];
     
+    public function category()
+    {
+        return $this->belongsTo(Category::class, 'codigo_categoria');
+    }
 
     // ahora se obtienen de la vista
     // public function category()

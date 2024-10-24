@@ -20,9 +20,8 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-// routes/web.php
-
-// routes/web.php
 
 Route::get('/categories', [CategoryCrudController::class, 'index'])->name('categories.index');
 Route::crud('product', ProductCrudController::class);
+Route::get('/products/create', [ProductCrudController::class, 'create'])->name('products.create');
+Route::post('/products', [ProductCrudController::class, 'store'])->name('products.store');

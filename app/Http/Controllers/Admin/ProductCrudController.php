@@ -5,6 +5,12 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Requests\ProductRequest;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
+use Illuminate\Http\Request;
+use App\Models\Product;
+use App\Models\Category;
+// use DB;
+use Illuminate\Support\Facades\DB;
+
 
 /**
  * Class ProductCrudController
@@ -19,21 +25,12 @@ class ProductCrudController extends CrudController
     use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
 
-    /**
-     * Configure the CrudPanel object. Apply settings to all operations.
-     * 
-     * @return void
-     */
+    public function index()
+    {
+        $products = Product::all();
+        return view('dashboard', compact('products'));
+    }
 
-     public function index()
-     {
-         $products = \App\Models\Product::all();
-         return view('dashboard', compact('products'));
-     }
-     
-     
-     
-     
     public function setup()
     {
         CRUD::setModel(\App\Models\Product::class);
@@ -41,12 +38,6 @@ class ProductCrudController extends CrudController
         CRUD::setEntityNameStrings('product', 'products');
     }
 
-    /**
-     * Define what happens when the List operation is loaded.
-     * 
-     * @see  https://backpackforlaravel.com/docs/crud-operation-list-entries
-     * @return void
-     */
     protected function setupListOperation()
     {
         CRUD::setFromDb(); // set columns from db columns.
@@ -62,18 +53,10 @@ class ProductCrudController extends CrudController
         CRUD::column('imagen')->label('Imagen')->type('image');
     }
 
-    /**
-     * Define what happens when the Create operation is loaded.
-     * 
-     * @see https://backpackforlaravel.com/docs/crud-operation-create
-     * @return void
-     */
     protected function setupCreateOperation()
     {
         CRUD::setValidation(ProductRequest::class);
 
-        // Asegúrate de usar los nombres correctos según tu base de datos
-        CRUD::field('codigo_producto')->label('Código del Producto')->type('text');
         CRUD::field('nombre_producto')->label('Nombre del Producto')->type('text');
         CRUD::field('codigo_subcategoria')->label('Código de Subcategoría')->type('text');
         CRUD::field('nombre_subcategoria')->label('Nombre de Subcategoría')->type('text');
@@ -84,18 +67,36 @@ class ProductCrudController extends CrudController
         CRUD::field('stock')->label('Stock')->type('number');
         CRUD::field('imagen')->label('Imagen')->type('upload')->upload(true)->disk('public');
 
-        // Campo de selección para la categoría
         CRUD::field('codigo_categoria')->label('Categoría')->type('select')->entity('category')->model('App\Models\Category')->attribute('nombre_categoria')->options(function ($query) {
-            return $query->whereNull('parent_id')->get(); // Solo mostrar categorías principales
+            return $query->whereNull('parent_id')->get(); 
         });
     }
 
-    /**
-     * Define what happens when the Update operation is loaded.
-     * 
-     * @see https://backpackforlaravel.com/docs/crud-operation-update
-     * @return void
-     */
+    public function store(Request $request)
+    {
+        $validatedData = $request->validate([
+            'nombre_producto' => 'required|string|max:255',
+            'descripcion' => 'required|string',
+            'precio' => 'required|numeric',
+            'stock' => 'required|integer',
+            'codigo_categoria' => 'required|exists:categories,id',
+        ]);
+
+        $lastCode = DB::table('MAEPR')->latest('KOPRRA')->first()->KOPRRA ?? 0;
+        $sku = $request->input('codigo_categoria') . substr($request->input('descripcion'), 0, 3) . str_pad($lastCode + 1, 6, '0', STR_PAD_LEFT);
+
+        Product::create([
+            'nombre_producto' => $validatedData['nombre_producto'],
+            'descripcion' => $validatedData['descripcion'],
+            'precio' => $validatedData['precio'],
+            'stock' => $validatedData['stock'],
+            'codigo_categoria' => $validatedData['codigo_categoria'],
+            'sku' => $sku,
+        ]);
+
+        return redirect()->route('products.create')->with('success', 'Producto creado con éxito.');
+    }
+
     protected function setupUpdateOperation()
     {
         $this->setupCreateOperation();
