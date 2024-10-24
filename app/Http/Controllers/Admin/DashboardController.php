@@ -9,7 +9,7 @@ class DashboardController extends Controller
     {
         //$chart = new UserChart();  // Instanciar el gráfico
 
-        // return view('dashboard', compact('chart'));
+    return view('dashboard');
     }
 }
 
